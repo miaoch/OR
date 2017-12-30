@@ -1,31 +1,22 @@
-import DataService from  '../../datas/DataService';
-import {LEVEL} from '../../datas/Config';
-import {promiseHandle, log, formatNumber} from '../../utils/util';
+import DataService from '../../datas/DataService';
+import Config from '../../datas/Config';
+import { promiseHandle, log, formatNumber } from '../../utils/util';
 
 Page({
   data: {
     showMonth: {},
-    data: {showMonth:''},
+    data: { showMonth: '' },
     selectDateText: '',
     pickerDateValue: '',
-
-    isSelectMode: false,
-    isMaskShow: false,
     isEditMode: false,
 
-    // modal
-    isModalShow: false,
-    modalMsg: '',
-
-    //事项等级数据
-    levelSelectedValue: LEVEL.normal,
-    levelSelectData: [LEVEL.normal, LEVEL.warning, LEVEL.danger],
+    //快递选择项
+    expressSelectedValue: Config.DEFAULT_EXPRESS,
+    expressSelectData: Config.EXPRESS,
 
     // updatePanel 数据
-    updatePanelTop: 20000,
+    updatePanelTop: 10000,
     updatePanelAnimationData: {},
-    todoInputValue: '',
-    todoTextAreaValue: '',
 
     // 事项列表
     itemList: [],
@@ -34,17 +25,15 @@ Page({
 
   onLoad() {
     let _this = this;
-    
     promiseHandle(wx.getSystemInfo).then((data) => {
       _this.setData({
         updatePanelTop: data.windowHeight
       });
     });
-    
     changeDate.call(this);
   },
 
-  onReady() {
+  onShow() {
     loadItemListData.call(this);
   },
 
@@ -54,120 +43,162 @@ Page({
   },
 
   changeDateEvent(e) {
-    const {year, month} = e.currentTarget.dataset;
+    const { year, month } = e.currentTarget.dataset;
     changeDate.call(this, new Date(year, parseInt(month) - 1, 1));
   },
 
   dateClickEvent(e) {
-    const {year, month, date} = e.currentTarget.dataset;
-    const {data} = this.data;
+    const { year, month, date } = e.currentTarget.dataset;
+    const { data } = this.data;
     let selectDateText = '';
 
     data['selected']['year'] = year;
     data['selected']['month'] = month;
     data['selected']['date'] = date;
-    
+
     this.setData({ data: data });
 
     changeDate.call(this, new Date(year, parseInt(month) - 1, date));
   },
 
+  //新增订单单击动作事件
   showUpdatePanelEvent() {
     showUpdatePanel.call(this);
     this.setData({ isEditMode: true });
+    var _this = this;
+    //读取剪切板
+    wx.getClipboardData({
+      success: function (res) {
+        var data = res.data;
+        var datas = data.trim().split(/[\s]+/);
+        if (datas.length != 3) return;
+        var obj = {};
+        for (var i = 0; i < datas.length; i++) {
+          if (/1[3-9]\d{9}/.test(datas[i])) {
+            obj.phone = datas[i];
+          } else if (datas[i].length <= 7) {
+            obj.name = datas[i];
+          } else {
+            obj.address = datas[i];
+          }
+        }
+        _this.setData(obj);
+      }
+    })
   },
 
+  //新增订单返回事件
   closeUpdatePanelEvent() {
     closeUpdatePanel.call(this);
+    this.setData({ isEditMode: false });
   },
 
-  editClickEvent() {
-    this.setData({ isEditMode: true });
-  },
-
-  // 事项列表项长按动作事件
+  //订单列表项长按动作事件
   listItemLongTapEvent(e) {
-    const {isEditMode} = this.data;
-    const {id} = e.currentTarget.dataset;
+    const { isEditMode } = this.data;
+    const { id, name } = e.currentTarget.dataset;
     let _this = this;
     //如果不是编辑勾选模式下才生效
     if (!isEditMode) {
-      const itemList = ['详情', '删除'];
-      promiseHandle(wx.showActionSheet, { itemList: itemList, itemColor: '#2E2E3B' })
-        .then((res) => {
-          if (!res.cancel) {
-            switch (itemList[res.tapIndex]) {
-              case '详情':
-                wx.navigateTo({ url: '../detail/detail?id=' + id });
-                break;
-              case '删除':
-                new DataService({ _id: id }).delete().then(() => {
-                  loadItemListData.call(_this);
-                });
-                break;
-            }
+      wx.showModal({
+        title: '提示',
+        content: '确认删除(' + name + ')吗？',
+        success: function (res) {
+          if (res.confirm) {
+            new DataService({ _id: id }).delete().then(() => {
+              loadItemListData.call(_this);
+            });
+          } else if (res.cancel) {
+            //TODO
           }
-        });
-    }
-  },
-
-  //取消编辑事件
-  cancelEditClickEvent() {
-    this.setData({ isEditMode: false });
-    resetItemListDataCheck.call(this);
-  },
-
-  // 事项标题文本框变化事件
-  todoInputChangeEvent(e) {
-    const {value} = e.detail;
-    this.setData({ todoInputValue: value });
-  },
-
-  //事项内容多行文本域变化事件
-  todoTextAreaChangeEvent(e) {
-    const {value} = e.detail;
-    this.setData({ todoTextAreaValue: value });
-  },
-
-  // 选择事项等级事件  
-  levelClickEvent(e) {
-    const {level} = e.currentTarget.dataset;
-    this.setData({ levelSelectedValue: level });
-  },
-
-  // 保存事项数据
-  saveDataEvent() {
-    const {todoInputValue, todoTextAreaValue, levelSelectedValue} = this.data;
-    const {year, month, date} = this.data.data.selected;
-    if (todoInputValue !== '') {
-    
-      let promise = new DataService({
-        title: todoInputValue,
-        content: todoTextAreaValue,
-        level: levelSelectedValue,
-        year: year,
-        month: parseInt(month) - 1,
-        date: date
-      }).save();
-      promise && promise.then(() => {
-        //清空表单
-        this.setData({
-          todoTextAreaValue: '',
-          levelSelectedValue: LEVEL.normal,
-          todoInputValue: ''
-        });
-        loadItemListData.call(this);
+        }
       })
-      
-      closeUpdatePanel.call(this);
-    } else {
-      showModal.call(this, '请填写事项内容');
     }
+  },
+
+  //订单内容多行文本域变化事件
+  dataChangeEvent(e) {
+    const key = e.currentTarget.dataset.key;
+    const value = e.detail.value;
+    this.setData({ [key]: value });
+  },
+
+  // 保存订单数据
+  saveDataEvent() {
+    const { name, address, phone, goods, express, remark } = this.data;
+    const { year, month, date } = this.data.data.selected;
+    if (!name) {
+      wx.showToast({
+        title: '名字不能为空！',
+        image: '../../images/notice.png',
+        duration: 2000
+      })
+      return;
+    }
+    if (!address) {
+      wx.showToast({
+        title: '地址不能为空！',
+        image: '../../images/notice.png',
+        duration: 2000
+      })
+      return;
+    }
+    if (!phone) {
+      wx.showToast({
+        title: '手机号不能为空！',
+        image: '../../images/notice.png',
+        duration: 2000
+      })
+      return;
+    }
+    if (!goods) {
+      wx.showToast({
+        title: '货号不能为空！',
+        image: '../../images/notice.png',
+        duration: 2000
+      })
+      return;
+    }
+    var goodarr = goods.trim().toUpperCase().split(/[,\s，]+/);
+    var gain = (Math.floor((goodarr.length - 1) / 3) + 1) * -1 * Config.PACKAGE_FEE;
+    goodarr.forEach((item, index, array) => {
+      var price = Config.GOOD_PRICE[item] || 0;
+      var cost = Config.GOOD_COST[item] || 0;
+      gain += (price - cost);
+    });
+
+    let order = new DataService({
+      name: name,
+      address: address,
+      phone: phone,
+      goods: goods,
+      express: express,
+      gain: gain,
+      remark: remark,
+      year: year,
+      month: parseInt(month) - 1,
+      date: date
+    }).save();
+    order && order.then(() => {
+      //清空表单
+      this.setData({
+        name: '',
+        address: '',
+        phone: '',
+        goods: '',
+        express: '',
+        remark: '',
+        levelSelectedValue: 0,
+      });
+      loadItemListData.call(this);
+    })
+    closeUpdatePanel.call(this);
+    this.setData({ isEditMode: false });
   },
 
   //批量删除事件
-  removeRangeTapEvent() {
-    let {itemList} = this.data;
+  /*removeRangeTapEvent() {
+    let { itemList } = this.data;
     if (!itemList) return;
     let _this = this;
     wx.showModal({
@@ -185,50 +216,22 @@ Page({
         }
       }
     });
-  },
+  },*/
 
+  //订单单击事件->跳转到详情页
   listItemClickEvent(e) {
-    const {isEditMode} = this.data;
-    const {id} = e.currentTarget.dataset;
-
+    const { isEditMode } = this.data;
+    const { id } = e.currentTarget.dataset;
     if (!isEditMode) {
-      this.listItemLongTapEvent(e); //由于元素的长按和点击事件有冲突，暂时合并在一起，直接调用长按事件
-      return;
-    }
-
-    let data = this.data.itemList || [];
-    let editItemList = this.data.editItemList || [];
-    const index = data.findIndex((item) => {
-      return item['_id'] == id;
-    });
-
-    if (index >= 0) {
-      data[index]['checked'] = !data[index]['checked'];
-      const tIndx = editItemList.findIndex((item) => {
-        return item == id;
-      });
-      if (data[index]['checked']) {
-        tIndx >= 0 || editItemList.push(id);
-      } else {
-        editItemList.splice(tIndx, 1);
-      }
-      this.setData({ itemList: data, editItemList: editItemList });
+      wx.navigateTo({
+        url: '../detail/detail?id=' + id,
+      })
     }
   },
-
-  //提示模态窗口关闭事件
-  closeModalEvent() {
-    closeModal.call(this);
-  }
 });
 
-
-
-
-
-
 /**
- * 显示事项数据添加更新面板
+ * 显示订单数据添加更新面板
  */
 function showUpdatePanel() {
   let animation = wx.createAnimation({
@@ -237,29 +240,6 @@ function showUpdatePanel() {
   animation.translateY('-100%').step();
   this.setData({
     updatePanelAnimationData: animation.export()
-  });
-}
-
-/**
- * 显示模态窗口
- * @param {String} msg 显示消息
- */
-function showModal(msg) {
-  this.setData({
-    isModalShow: true,
-    isMaskShow: true,
-    modalMsg: msg
-  });
-}
-
-/**
- * 关闭模态窗口
- */
-function closeModal() {
-  this.setData({
-    isModalShow: false,
-    isMaskShow: false,
-    modalMsg: ''
   });
 }
 
@@ -277,26 +257,14 @@ function closeUpdatePanel() {
 }
 
 /**
- * 加载事项列表数据
+ * 加载订单列表数据
  */
 function loadItemListData() {
-  const {year, month, date} = this.data.data.selected;
+  const { year, month, date } = this.data.data.selected;
   let _this = this;
   DataService.findByDate(new Date(Date.parse([year, month, date].join('-')))).then((data) => {
     _this.setData({ itemList: data });
   });
-
-}
-
-/**
- * 重置是项列表勾选记录
- */
-function resetItemListDataCheck() {
-  let data = this.data.itemList || [];
-  for (let i = 0, len = data.length; i < len; i++) {
-    data[i]['checked'] = false;
-  }
-  this.setData({ itemList: data });
 }
 
 /**

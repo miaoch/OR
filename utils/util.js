@@ -40,8 +40,7 @@ function guid() {
  */
 function log(msg) {
   if (!msg) return;
-  if (getApp().settings['debug'])
-    console.log(msg);
+  console.log(msg);
   let logs = wx.getStorageSync('logs') || [];
   logs.unshift(msg)
   wx.setStorageSync('logs', logs)

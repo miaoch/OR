@@ -9,6 +9,7 @@ class DataRepository {
      * @returns {Promise} 
      */
     static addData(data) {
+      console.log(data);
         if (!data) return false;
         data['_id'] = guid();
         return DataRepository.findAllData().then(allData => {
@@ -90,8 +91,10 @@ class DataRepository {
      * @returns {Promise} Promise实例
      */
     static findAllData() {
-        return promiseHandle(wx.getStorage, {key: Config.ITEMS_SAVE_KEY}).then(res => res.data ? res.data : []).catch(ex => {
-            log(ex);
+        return promiseHandle(wx.getStorage, { key: Config.ITEMS_SAVE_KEY }).then(res => res.data ? res.data : [], error => {
+          console.log(error);
+        }).catch(ex => {
+          log(ex);
         });
     }
 

@@ -3,7 +3,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
-    padding: 40rpx 20rpx;
+    padding: 20rpx 20rpx;
 }
 .show-item .title {
     width: 150rpx;

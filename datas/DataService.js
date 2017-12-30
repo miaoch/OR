@@ -1,4 +1,5 @@
 import DataRepository from 'DataRepository';
+import Config from 'Config';
 import {promiseHandle} from '../utils/util';
 
 /**
@@ -9,12 +10,17 @@ class DataSerivce {
     constructor(props) {
         props = props || {};
         this.id = props['_id'] || 0;
-        this.content = props['content'] || '';
         this.date = props['date'] || '';
         this.month = props['month'] || '';
         this.year = props['year'] || '';
-        this.level = props['level'] || '';
-        this.title = props['title'] || '';
+        this.name = props['name'] || '';
+        this.address = props['address'] || '';
+        this.phone = props['phone'] || '';
+        this.goods = props['goods'] || '';
+        this.express = props['express'] || Config.DEFAULT_EXPRESS;
+        this.expnumber = props['expnumber'] || '';
+        this.gain = props['gain'] || '';
+        this.remark = props['remark'] || '';
     }
 
     /**
@@ -23,12 +29,17 @@ class DataSerivce {
     save() {
         if (this._checkProps()) {
             return DataRepository.addData({
-                title: this.title,
-                content: this.content,
                 year: this.year,
                 month: this.month,
                 date: this.date,
-                level: this.level,
+                name: this.name,
+                address: this.address,
+                phone: this.phone,
+                goods: this.goods,
+                express: this.express,
+                expnumber: this.expnumber,
+                gain: this.gain,
+                remark: this.remark,
                 addDate: new Date().getTime()
             });
         }
@@ -80,7 +91,8 @@ class DataSerivce {
     }
 
     _checkProps() {
-        return this.title && this.level && this.date && this.year && this.month;
+        return true;
+        //return this.title && this.level && this.date && this.year && this.month;
     }
 }
 

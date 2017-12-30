@@ -1,36 +1,82 @@
 <view class="show-item">
-    <view class="title">标题</view>
-    <view class="content">
-        <text>{{item.title}}</text>
-    </view>
+  <view class="title">单号</view>
+  <view class="content">
+    <text>{{item.expnumber}}</text>
+  </view>
 </view>
 
 <view class="show-item">
-    <view class="title">内容</view>
-    <view class="content">
-        <text>{{item.content}}</text>
-    </view>
+  <view class="title">姓名</view>
+  <view class="content">
+    <text>{{item.name}}</text>
+  </view>
 </view>
 
 <view class="show-item">
-    <view class="title">事项等级</view>
-    <view class="content">
-        <view wx:if="{{item.level == 1}}" class="ball bg-normal"></view>
-        <view wx:elif="{{item.level == 2}}" class="ball bg-warning"></view>
-        <view wx:else class="ball bg-danger"></view>
-    </view>
+  <view class="title">手机号</view>
+  <view class="content">
+    <text>{{item.phone}}</text>
+  </view>
 </view>
 
 <view class="show-item">
-    <view class="title">事项日期</view>
-    <view class="content">
-        <text>{{item.year}}年{{item.month+1}}月{{item.date}}日</text>
-    </view>
+  <view class="title">地址</view>
+  <view class="content">
+    <text>{{item.address}}</text>
+  </view>
 </view>
 
 <view class="show-item">
-    <view class="title">添加日期</view>
-    <view class="content">
-        <text>{{item.addDate}}</text>
-    </view>
+  <view class="title">快递类型</view>
+  <view class="content">
+    <text>{{expressSelectData[item.express].name}}</text>
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">货号</view>
+  <view class="content">
+    <text>{{item.goods}}</text>
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">利润</view>
+  <view class="content">
+    <text>{{item.gain}}</text>
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">备注</view>
+  <view class="content">
+    <text>{{item.remark}}</text>
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">订单日期</view>
+  <view class="content">
+    <text>{{item.year}}年{{item.month+1}}月{{item.date}}日</text>
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">添加日期</view>
+  <view class="content">
+    <text>{{item.addDate}}</text>
+  </view>
+</view>
+
+<!--float actions-->
+<view class="float-container">
+  <view class="float-action operate" bindtap="settingTapEvent">
+    <image src="../../images/setting.png" />
+  </view>
+  <view class="float-action operate" bindtap="editTapEvent">
+    <image src="../../images/edit.png" />
+  </view>
+  <view class="float-action operate" bindtap="removeTapEvent">
+    <image src="../../images/remove.png" />
+  </view>
 </view>
