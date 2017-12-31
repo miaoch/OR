@@ -1,0 +1,64 @@
+<view class="show-item">
+  <view class="title">单号</view>
+  <view class="content">
+    <input data-key="expnumber" value="{{item.expnumber}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">姓名</view>
+  <view class="content">
+    <input data-key="name" value="{{item.name}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">手机号</view>
+  <view class="content">
+    <input data-key="phone" value="{{item.phone}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">地址</view>
+  <view class="content">
+    <input data-key="address" value="{{item.address}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">快递类型</view>
+  <view class="content">
+    <radio-group class="radio-group" bindchange="dataChangeEvent" data-key="express">
+      <label class="radio" wx:for-item="itemName" wx:for="{{expressSelectData}}" wx:>
+        <radio value="{{itemName.value}}" checked="{{itemName.value == item.express}}" />{{itemName.name}}
+      </label>
+    </radio-group>
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">货号</view>
+  <view class="content">
+    <input data-key="goods" value="{{item.goods}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">利润</view>
+  <view class="content">
+    <input data-key="gain" value="{{item.gain}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">备注</view>
+  <view class="content">
+    <input data-key="remark" value="{{item.remark}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="footer">
+    <view class="btn" bindtap="closeEditPanelEvent">取消</view>
+    <view class="btn primary" bindtap="saveDataEvent">保存</view>
+</view>

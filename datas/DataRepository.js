@@ -9,7 +9,6 @@ class DataRepository {
      * @returns {Promise} 
      */
     static addData(data) {
-      console.log(data);
         if (!data) return false;
         data['_id'] = guid();
         return DataRepository.findAllData().then(allData => {
@@ -75,13 +74,13 @@ class DataRepository {
         if (!data || !data['_id']) return false;
         return DataRepository.findAllData().then(allData => {
             if (!allData) return false;
-            for (let idx = 0, len = allData.length; i < len; i++) {
+            for (let i = 0, len = allData.length; i < len; i++) {
                 if (allData[i] && allData[i]['_id'] == data['_id']) {
                     allData[i] = data;
                     break;
                 }
             }
-            wx.setStorage({key: Config.ITEMS_SAVE_KEY, data: data});
+            wx.setStorage({ key: Config.ITEMS_SAVE_KEY, data: allData});
         });
         
     }

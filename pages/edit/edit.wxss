@@ -1,0 +1,46 @@
+.show-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 20rpx 20rpx;
+}
+.show-item .title {
+    width: 150rpx;
+    color: #DDD
+}
+.show-item .title,
+.show-item .content {
+    font-size: 32rpx;
+}
+
+.ball {
+    width: 40rpx;
+    height: 40rpx;
+    border-radius: 50%;
+}
+.footer {
+    position: fixed;
+    display: flex;
+    left: 0;
+    height: 100rpx;
+    right: 0;
+    bottom: 0;
+    border-top: 2rpx solid #333;
+}
+.footer .btn {
+    flex: 1;
+    text-align: center;
+    line-height: 100rpx;
+    font-size: 36rpx;
+    color: #DDD;
+}
+.footer .btn:active {
+    background: #333;
+}
+.footer .btn.primary {
+    background: #E14848;
+}
+.footer .btn.primary:active {
+    background: #D64343
+}

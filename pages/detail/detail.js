@@ -17,6 +17,15 @@ Page({
             });
         });
     },
+    onShow() {
+      const { _id } = this.data.item;
+      let item = DataService.findById(_id).then((item) => {
+        item['addDate'] = getDateStr(new Date(item['addDate']));
+        this.setData({
+          item: item
+        });
+      });
+    },
     removeTapEvent(e) {
       const { _id, name } = this.data.item;
       wx.showModal({
@@ -73,5 +82,11 @@ Page({
           })
         }
       })
+    },
+    editTapEvent(e) {
+      const {_id} = this.data.item;
+      wx.navigateTo({
+        url: '../edit/edit?id=' + _id,
+      });
     }
 });
