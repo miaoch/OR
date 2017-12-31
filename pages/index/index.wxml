@@ -102,7 +102,7 @@
   <input placeholder="手机号" data-key="phone" value="{{phone}}" type="number" bindinput="dataChangeEvent"></input>
   <input placeholder="货号" data-key="goods" value="{{goods}}" type="text" bindinput="dataChangeEvent"></input>
   <radio-group class="radio-group" bindchange="dataChangeEvent" data-key="express">
-    <label class="radio" wx:for="{{expressSelectData}}">
+    <label class="radio" wx:for="{{expressSelectData}}" wx:key="item">
       <radio value="{{item.value}}" checked="{{item.value == expressSelectedValue}}" />{{item.name}}
     </label>
   </radio-group>
