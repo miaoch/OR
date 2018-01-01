@@ -39,7 +39,7 @@
     </view>
     <view class="body row">
       <block wx:for="{{data.dates}}" wx:key="_id">
-        <view bindtap="dateClickEvent" data-year="{{item.year}}" data-month="{{item.month}}" data-date="{{item.date}}" class="col {{data.showMonth == item.month ? '' : 'old'}} {{data.currentDate == item.date && data.currentYear==item.year && data.currentMonth == item.month ? 'current' : ''}} {{item.active ? 'active' : ''}}">
+        <view bindtap="dateClickEvent" data-year="{{item.year}}" data-month="{{item.month}}" data-date="{{item.date}}" class="col {{data.showMonth == item.month ? '' : 'old'}}  {{item.active ? 'active' : ''}} {{data.showMonth == item.month && havaData[item.date] > 0 ? 'havadata':''}}">
           <text>{{item.date}}</text>
         </view>
       </block>
@@ -53,6 +53,7 @@
   <view class="common-list">
     <view class="header" wx:if="{{itemList.length > 0}}">
       <text>订单记录</text>
+      <text style="position: absolute;right:50rpx;">订单数:{{orderCount}} 总利润:{{orderGain}}</text>
     </view>
 
     <block wx:for="{{itemList}}" wx:key="id">

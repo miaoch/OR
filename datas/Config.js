@@ -1,10 +1,12 @@
 
 module.exports = {
   ITEMS_SAVE_KEY: 'order_record_save_key',
+  MEMBER_SAVE_KEY: 'MEMBER_SAVE_KEY',
+  MEMBER_PHONE_SAVE_KEY: 'MEMBER_PHONE_SAVE_KEY',
+  PACKAGE_FEE_SAVE_KEY: 'PACKAGE_FEE_SAVE_KEY',
+  DEFAULT_PACKAGE_FEE: 3,
   DEFAULT_EXPRESS: 0,
-  MEMBER: '陈倩倩',
-  MEMBER_PHONE: '15726803299',
-  PACKAGE_FEE: 3,
+  
   EXPRESS: [
     {
       name: '中通',

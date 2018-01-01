@@ -2,7 +2,8 @@
   "pages":[
     "pages/index/index",
     "pages/detail/detail",
-    "pages/edit/edit"
+    "pages/edit/edit",
+    "pages/setting/setting"
   ],
   "window":{
     "backgroundTextStyle":"light",

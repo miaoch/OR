@@ -70,7 +70,7 @@
 
 <!--float actions-->
 <view class="float-container">
-  <view class="float-action operate" bindtap="settingTapEvent">
+  <view class="float-action operate" bindtap="copyTapEvent" bindlongpress="copyLongPressEvent">
     <image src="../../images/setting.png" />
   </view>
   <view class="float-action operate" bindtap="editTapEvent">

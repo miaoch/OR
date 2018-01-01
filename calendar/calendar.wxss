@@ -59,6 +59,11 @@
 }
 .og-calendar .body .col.active text {
     border-color: #E04343;
+    border-width: 4rpx;
+}
+.og-calendar .body .col.havadata text {
+    background-color: #FFB90F;
+    color: #000000;
 }
 .og-calendar .body .col.old {
     color: #7A7A7F

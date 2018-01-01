@@ -1,0 +1,25 @@
+<view class="show-item">
+  <view class="title">成员</view>
+  <view class="content">
+    <input data-key="member" value="{{member}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">手机号</view>
+  <view class="content">
+    <input data-key="member_phone" value="{{member_phone}}" type="text" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="show-item">
+  <view class="title">包装费</view>
+  <view class="content">
+    <input data-key="packagefee" value="{{packagefee}}" type="number" bindinput="dataChangeEvent" />
+  </view>
+</view>
+
+<view class="footer">
+    <view class="btn" bindtap="closeEditPanelEvent">取消</view>
+    <view class="btn primary" bindtap="saveDataEvent">保存</view>
+</view>

@@ -18,6 +18,7 @@
 .common-list .item:active {
     background: #333333
 }
+
 .common-list .item .inner {
     position: relative;
     border-top: 2rpx solid #333;

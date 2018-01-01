@@ -101,6 +101,28 @@ class DataSerivce {
     if (!datestr) return [];
     return DataRepository.findAllData(datestr).then(data => data);
   }
+  /**
+   * 根据日期查找所有符合条件的订单记录
+   * @param {datestr} 201801
+   * @returns {Array} 事项集合
+   */
+  static findByMonth(datestr) {
+    if (!datestr) return [];
+    var result = {};
+    //每个月有最多31天
+    for (var i=1; i<=31; i++) {
+      let date = formatNumber(i);
+      try {
+        var value = wx.getStorageSync(Config.ITEMS_SAVE_KEY + datestr + date)
+        if (value) {
+          result[i] = 1;
+        } else {
+          result[i] = 0;
+        }
+      } catch (e) {}
+    }
+    return result;
+  }
 
   _checkProps() {
     return this.name && this.phone && this.address && this.goods;

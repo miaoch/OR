@@ -13,7 +13,9 @@ Page({
     let item = DataService.findById(datestr, id).then((item) => {
       item['addDate'] = getDateStr(new Date(item['addDate']));
       this.setData({
-        item: item
+        item: item,
+        id,
+        datestr
       });
     });
   },
@@ -28,7 +30,10 @@ Page({
     });
   },*/
   closeEditPanelEvent(e) {
-    wx.navigateBack();
+    const {id, datestr} = this.data;
+    wx.redirectTo({
+      url: '../detail/detail?id=' + id + '&datestr=' + datestr,
+    })
   },
   //订单内容多行文本域变化事件
   dataChangeEvent(e) {
@@ -82,6 +87,9 @@ Page({
         item: '',
       });
     })
-    wx.navigateBack();
+    const { id, datestr } = this.data;
+    wx.redirectTo({
+      url: '../detail/detail?id=' + id + '&datestr=' + datestr,
+    })
   },
 });

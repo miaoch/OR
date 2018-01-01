@@ -62,7 +62,3 @@ packagefee:3 包装费                  可维护
 
 下一步目标：
 3.尝试添加微信人员  暂时做不到
-
-1.维护member memberphone packagefee，个人设置页面开发
-4.日历展示有无记录
-5.列表显示订单数和总利润

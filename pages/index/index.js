@@ -35,6 +35,7 @@ Page({
 
   onShow() {
     loadItemListData.call(this);
+    haveData.call(this);//刷新日历
   },
 
   datePickerChangeEvent(e) {
@@ -44,6 +45,7 @@ Page({
 
   changeDateEvent(e) {
     const { year, month } = e.currentTarget.dataset;
+    haveData2.call(this, year, month);//刷新日历
     changeDate.call(this, new Date(year, parseInt(month) - 1, 1));
   },
 
@@ -57,7 +59,6 @@ Page({
     data['selected']['date'] = date;
 
     this.setData({ data: data });
-
     changeDate.call(this, new Date(year, parseInt(month) - 1, date));
   },
 
@@ -99,7 +100,6 @@ Page({
     const { id, name } = e.currentTarget.dataset;
     const { year, month, date } = this.data.data.selected;
     let datestr = '' + year + formatNumber(month) + formatNumber(date);
-    console.log(month);
     let _this = this;
     //如果不是编辑勾选模式下才生效
     if (!isEditMode) {
@@ -110,6 +110,7 @@ Page({
           if (res.confirm) {
             new DataService({ _id: id, year: year, month: month - 1, date, date }).delete().then(() => {
               loadItemListData.call(_this);
+              haveData.call(this);//刷新日历
             });
           } else if (res.cancel) {
             //TODO
@@ -163,7 +164,8 @@ Page({
       return;
     }
     var goodarr = goods.trim().toUpperCase().split(/[,\s，]+/);
-    var gain = (Math.floor((goodarr.length - 1) / 3) + 1) * -1 * Config.PACKAGE_FEE;
+    var packagefee = wx.getStorageSync(Config.PACKAGE_FEE_SAVE_KEY) || Config.DEFAULT_PACKAGE_FEE;
+    var gain = (Math.floor((goodarr.length - 1) / 3) + 1) * -1 * packagefee;
     goodarr.forEach((item, index, array) => {
       var price = Config.GOOD_PRICE[item] || 0;
       var cost = Config.GOOD_COST[item] || 0;
@@ -197,6 +199,7 @@ Page({
     })
     closeUpdatePanel.call(this);
     this.setData({ isEditMode: false });
+    haveData.call(this);//刷新日历
   },
 
   //订单单击事件->跳转到详情页
@@ -245,7 +248,12 @@ function loadItemListData() {
   const { year, month, date } = this.data.data.selected;
   let _this = this;
   DataService.findByDate('' + year + formatNumber(month) + formatNumber(date)).then((data) => {
-    _this.setData({ itemList: data });
+    var orderCount = data.length;
+    var orderGain = 0;
+    for (var i = 0; i < orderCount;i++) {
+      orderGain += data[i].gain;
+    }
+    _this.setData({ itemList: data, orderCount, orderGain});
   });
 }
 
@@ -369,10 +377,17 @@ function changeDate(targetDate) {
       _id++;
     }
   }
-
   data.dates = dates;
-
-
   this.setData({ data: data, pickerDateValue: showYear + '-' + showMonth });
   loadItemListData.call(this);
+}
+//统计那天是否有数据 需要延迟执行
+function haveData() {
+  const { showYear, showMonth} = this.data.data;
+  haveData2.call(this, showYear, showMonth);
+}
+//统计那天是否有数据 需要延迟执行
+function haveData2(showYear, showMonth) {
+  var result = DataService.findByMonth('' + showYear + formatNumber(showMonth));
+  this.setData({ havaData: result });
 }
