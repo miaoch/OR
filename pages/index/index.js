@@ -40,6 +40,7 @@ Page({
 
   datePickerChangeEvent(e) {
     const date = new Date(Date.parse(e.detail.value));
+    haveData2.call(this, date.getFullYear(), date.getMonth() + 1);//刷新日历
     changeDate.call(this, new Date(date.getFullYear(), date.getMonth(), 1));
   },
 
@@ -59,6 +60,9 @@ Page({
     data['selected']['date'] = date;
 
     this.setData({ data: data });
+    if (month != this.data.data.showMonth) {
+      haveData2.call(this, year, month);//刷新日历
+    }
     changeDate.call(this, new Date(year, parseInt(month) - 1, date));
   },
 
@@ -71,16 +75,24 @@ Page({
     wx.getClipboardData({
       success: function (res) {
         var data = res.data;
-        var datas = data.trim().split(/[\s]+/);
-        if (datas.length != 3) return;
         var obj = {};
-        for (var i = 0; i < datas.length; i++) {
-          if (/1[3-9]\d{9}/.test(datas[i])) {
-            obj.phone = datas[i];
-          } else if (datas[i].length <= 7) {
-            obj.name = datas[i];
-          } else {
-            obj.address = datas[i];
+        //微店模版
+        if (data.startsWith('收货人信息:')) {
+          var datas = data.substring(6).trim().split(/[\s]+/);
+          obj.name = datas[0];
+          obj.phone = datas[1];
+          obj.address = data.substring(data.indexOf(obj.phone) + obj.phone.length).trim();
+        } else {
+          var datas = data.trim().split(/[\s]+/);
+          if (datas.length != 3) return;
+          for (var i = 0; i < datas.length; i++) {
+            if (/1[3-9]\d{9}/.test(datas[i])) {
+              obj.phone = datas[i];
+            } else if (datas[i].length <= 7) {
+              obj.name = datas[i];
+            } else {
+              obj.address = datas[i];
+            }
           }
         }
         _this.setData(obj);
@@ -251,7 +263,7 @@ function loadItemListData() {
     var orderCount = data.length;
     var orderGain = 0;
     for (var i = 0; i < orderCount;i++) {
-      orderGain += data[i].gain;
+      orderGain += parseFloat(data[i].gain);
     }
     _this.setData({ itemList: data, orderCount, orderGain});
   });
