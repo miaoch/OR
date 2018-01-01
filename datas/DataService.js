@@ -114,7 +114,7 @@ class DataSerivce {
       let date = formatNumber(i);
       try {
         var value = wx.getStorageSync(Config.ITEMS_SAVE_KEY + datestr + date)
-        if (value) {
+        if (value && value.length > 0) {
           result[i] = 1;
         } else {
           result[i] = 0;

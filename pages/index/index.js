@@ -389,5 +389,6 @@ function haveData() {
 //统计那天是否有数据 需要延迟执行
 function haveData2(showYear, showMonth) {
   var result = DataService.findByMonth('' + showYear + formatNumber(showMonth));
+  console.log(result);
   this.setData({ havaData: result });
 }
