@@ -1,6 +1,6 @@
 import DataRepository from 'DataRepository';
 import Config from 'Config';
-import { promiseHandle } from '../utils/util';
+import { promiseHandle, formatNumber } from '../utils/util';
 
 /**
  * 数据业务类
@@ -50,7 +50,6 @@ class DataSerivce {
    */
   update() {
     if (this._checkProps()) {
-      console.log(true);
       return DataRepository.saveData({
         _id: this.id,
         year: this.year,
@@ -70,18 +69,18 @@ class DataSerivce {
   }
 
   /**
-   * 获取所有事项数据
+   * 获取所有订单数据
    */
-  static findAll() {
-    return DataRepository.findAllData()
+  static findAll(datestr) {
+    return DataRepository.findAllData(datestr)
       .then(data => data.data ? data.data : []);
   }
 
   /**
    * 通过id获取事项
    */
-  static findById(id) {
-    return DataRepository.findBy(item => item['_id'] == id)
+  static findById(datestr, id) {
+    return DataRepository.findBy(datestr, item => item['_id'] == id)
       .then(items => (items && items.length > 0) ? items[0] : null);
   }
 
@@ -89,29 +88,18 @@ class DataSerivce {
    * 根据id删除事项数据
    */
   delete() {
-    return DataRepository.removeData(this.id);
+    const datestr = '' + this.year + formatNumber(this.month + 1) + formatNumber(this.date);
+    return DataRepository.removeData(datestr, this.id);
   }
 
   /**
-   * 批量删除数据
-   * @param {Array} ids 事项Id集合
-   */
-  static deleteRange(ids) {
-    return DataRepository.removeRange(ids);
-  }
-
-  /**
-   * 根据日期查找所有符合条件的事项记录
+   * 根据日期查找所有符合条件的订单记录
    * @param {Date} date 日期对象
    * @returns {Array} 事项集合
    */
-  static findByDate(date) {
-    if (!date) return [];
-    return DataRepository.findBy(item => {
-      return item && item['date'] == date.getDate() &&
-        item['month'] == date.getMonth() &&
-        item['year'] == date.getFullYear();
-    }).then(data => data);
+  static findByDate(datestr) {
+    if (!datestr) return [];
+    return DataRepository.findAllData(datestr).then(data => data);
   }
 
   _checkProps() {

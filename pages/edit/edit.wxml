@@ -27,10 +27,10 @@
 </view>
 
 <view class="show-item">
-  <view class="title">快递类型</view>
+  <view class="title">快递</view>
   <view class="content">
     <radio-group class="radio-group" bindchange="dataChangeEvent" data-key="express">
-      <label class="radio" wx:for-item="itemName" wx:for="{{expressSelectData}}" wx:>
+      <label class="radio" wx:for-item="itemName" wx:for="{{expressSelectData}}" wx:key="value">
         <radio value="{{itemName.value}}" checked="{{itemName.value == item.express}}" />{{itemName.name}}
       </label>
     </radio-group>

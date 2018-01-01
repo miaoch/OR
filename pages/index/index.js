@@ -97,6 +97,9 @@ Page({
   listItemLongTapEvent(e) {
     const { isEditMode } = this.data;
     const { id, name } = e.currentTarget.dataset;
+    const { year, month, date } = this.data.data.selected;
+    let datestr = '' + year + formatNumber(month) + formatNumber(date);
+    console.log(month);
     let _this = this;
     //如果不是编辑勾选模式下才生效
     if (!isEditMode) {
@@ -105,7 +108,7 @@ Page({
         content: '确认删除(' + name + ')吗？',
         success: function (res) {
           if (res.confirm) {
-            new DataService({ _id: id }).delete().then(() => {
+            new DataService({ _id: id, year: year, month: month - 1, date, date }).delete().then(() => {
               loadItemListData.call(_this);
             });
           } else if (res.cancel) {
@@ -196,35 +199,14 @@ Page({
     this.setData({ isEditMode: false });
   },
 
-  //批量删除事件
-  /*removeRangeTapEvent() {
-    let { itemList } = this.data;
-    if (!itemList) return;
-    let _this = this;
-    wx.showModal({
-      title: '提示',
-      content: '确定要删除选定的事项？',
-      success: (res) => {
-        if (res.confirm) {
-          DataService.deleteRange(_this.data.editItemList).then(() => {
-            loadItemListData.call(_this);
-          });
-          _this.setData({
-            editItemList: [],
-            isEditMode: false
-          });
-        }
-      }
-    });
-  },*/
-
   //订单单击事件->跳转到详情页
   listItemClickEvent(e) {
     const { isEditMode } = this.data;
+    const { year, month, date } = this.data.data.selected;
     const { id } = e.currentTarget.dataset;
     if (!isEditMode) {
       wx.navigateTo({
-        url: '../detail/detail?id=' + id,
+        url: '../detail/detail?id=' + id + '&datestr=' + year + formatNumber(month) + formatNumber(date),
       })
     }
   },
@@ -262,7 +244,7 @@ function closeUpdatePanel() {
 function loadItemListData() {
   const { year, month, date } = this.data.data.selected;
   let _this = this;
-  DataService.findByDate(new Date(Date.parse([year, month, date].join('-')))).then((data) => {
+  DataService.findByDate('' + year + formatNumber(month) + formatNumber(date)).then((data) => {
     _this.setData({ itemList: data });
   });
 }

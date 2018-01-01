@@ -1,8 +1,10 @@
 import Config from 'Config';
-import {guid, log, promiseHandle} from '../utils/util';
+import {guid, log, promiseHandle, formatNumber} from '../utils/util';
 
 class DataRepository {
-
+    static getDateStr(data) {
+      return '' + data.year + formatNumber(data.month + 1) + formatNumber(data.date); 
+    }
     /**
      * 添加数据
      * @param {Object} 添加的数据
@@ -11,10 +13,11 @@ class DataRepository {
     static addData(data) {
         if (!data) return false;
         data['_id'] = guid();
-        return DataRepository.findAllData().then(allData => {
+        const datestr = this.getDateStr(data);
+        return DataRepository.findAllData(datestr).then(allData => {
             allData = allData || [];
             allData.unshift(data);
-            wx.setStorage({key:Config.ITEMS_SAVE_KEY, data: allData});
+            wx.setStorage({ key: Config.ITEMS_SAVE_KEY + datestr, data: allData});
         });
     }
 
@@ -23,8 +26,8 @@ class DataRepository {
      * @param {string} id 数据项idid
      * @returns {Promise}
      */
-    static removeData(id) {
-        return DataRepository.findAllData().then(data => {
+    static removeData(datestr, id) {
+      return DataRepository.findAllData(datestr).then(data => {
             if (!data) return;
             for (let idx = 0, len = data.length; idx < len; idx++) {
                 if (data[idx] && data[idx]['_id'] == id) {
@@ -32,37 +35,8 @@ class DataRepository {
                     break;
                 }
             }
-            wx.setStorage({key: Config.ITEMS_SAVE_KEY, data: data});
+            wx.setStorage({ key: Config.ITEMS_SAVE_KEY + datestr, data: data});
         });
-    }
-
-    /**
-     * 批量删除数据
-     * @param {Array} range id集合
-     * @returns {Promise}
-     */
-    static removeRange(range) {
-        if (!range) return;
-        return DataRepository.findAllData().then(data => {
-            if (!data) return;
-            let indexs = [];
-            for (let rIdx = 0, rLen = range.length; rIdx < rLen; rIdx++) {
-                for (let idx = 0, len = data.length; idx < len; idx++) {
-                    if (data[idx] && data[idx]['_id'] == range[rIdx]) {
-                        indexs.push(idx);
-                        break;
-                    }
-                }
-            }
-            
-            let tmpIdx = 0;
-            indexs.forEach(item => {
-                data.splice(item - tmpIdx, 1);
-                tmpIdx++;
-            });
-            wx.setStorage({key: Config.ITEMS_SAVE_KEY, data: data});
-        });
-        
     }
 
     /**
@@ -72,7 +46,8 @@ class DataRepository {
      */
     static saveData(data) {
         if (!data || !data['_id']) return false;
-        return DataRepository.findAllData().then(allData => {
+        const datestr = this.getDateStr(data);
+        return DataRepository.findAllData(datestr).then(allData => {
             if (!allData) return false;
             for (let i = 0, len = allData.length; i < len; i++) {
                 if (allData[i] && allData[i]['_id'] == data['_id']) {
@@ -80,18 +55,19 @@ class DataRepository {
                     break;
                 }
             }
-            wx.setStorage({ key: Config.ITEMS_SAVE_KEY, data: allData});
+            wx.setStorage({ key: Config.ITEMS_SAVE_KEY + datestr, data: allData});
         });
         
     }
 
     /**
      * 获取所有数据
+     * @param {data} 年月日时间戳拼接20170102
      * @returns {Promise} Promise实例
      */
-    static findAllData() {
-        return promiseHandle(wx.getStorage, { key: Config.ITEMS_SAVE_KEY }).then(res => res.data ? res.data : [], error => {
-          console.log(error);
+    static findAllData(datestr) {
+      return promiseHandle(wx.getStorage, { key: Config.ITEMS_SAVE_KEY + datestr }).then(res => res.data ? res.data : [], error => {
+          return [];
         }).catch(ex => {
           log(ex);
         });
@@ -102,8 +78,8 @@ class DataRepository {
      * @param {Function} 回调
      * @returns {Promise} Promise实例
      */
-    static findBy(predicate) {
-        return DataRepository.findAllData().then(data => {
+    static findBy(datestr, predicate) {
+      return DataRepository.findAllData(datestr).then(data => {
             if (data) {
                 data = data.filter(item => predicate(item));
             }

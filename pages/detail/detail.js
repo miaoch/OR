@@ -1,5 +1,5 @@
 import DataService from '../../datas/DataService';
-import {getDateStr} from '../../utils/util';
+import {getDateStr, formatNumber} from '../../utils/util';
 import Config from '../../datas/Config';
 
 Page({
@@ -9,17 +9,19 @@ Page({
     },
 
     onLoad(option) {
-        const {id} = option;
-        let item = DataService.findById(id).then((item) => {
+        const {id, datestr} = option;
+        let item = DataService.findById(datestr, id).then((item) => {
             item['addDate'] = getDateStr(new Date(item['addDate']));
             this.setData({
                 item: item
             });
         });
     },
-    onShow() {
-      const { _id } = this.data.item;
-      let item = DataService.findById(_id).then((item) => {
+    onShow(option) {
+      const { _id, year, month, date } = this.data.item;
+      if (!this.data.item) return;
+      const datestr = '' + year + formatNumber(month + 1) + formatNumber(date);
+      let item = DataService.findById(datestr, _id).then((item) => {
         item['addDate'] = getDateStr(new Date(item['addDate']));
         this.setData({
           item: item
@@ -27,13 +29,14 @@ Page({
       });
     },
     removeTapEvent(e) {
-      const { _id, name } = this.data.item;
+      const { _id, name, year, month, date  } = this.data.item;
+      const datestr = '' + year + formatNumber(month + 1) + formatNumber(date);
       wx.showModal({
         title: '提示',
         content: '确认删除(' + name + ')吗？',
         success: function (res) {
           if (res.confirm) {
-            new DataService({ _id: _id }).delete().then(() => {
+            new DataService({ _id: _id, year: year, month: month, date: date}).delete().then(() => {
               wx.navigateBack();
             });
           } else if (res.cancel) {
@@ -84,9 +87,9 @@ Page({
       })
     },
     editTapEvent(e) {
-      const {_id} = this.data.item;
+      const { _id, year, month, date} = this.data.item;
       wx.navigateTo({
-        url: '../edit/edit?id=' + _id,
+        url: '../edit/edit?id=' + _id + '&datestr=' + year + formatNumber(month + 1) + formatNumber(date),
       });
     }
 });

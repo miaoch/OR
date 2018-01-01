@@ -9,23 +9,24 @@ Page({
   },
 
   onLoad(option) {
-    const { id } = option;
-    let item = DataService.findById(id).then((item) => {
+    const { id, datestr } = option;
+    let item = DataService.findById(datestr, id).then((item) => {
       item['addDate'] = getDateStr(new Date(item['addDate']));
       this.setData({
         item: item
       });
     });
   },
-  onShow() {
-    const { _id } = this.data.item;
-    let item = DataService.findById(_id).then((item) => {
+  /*onShow() {
+    const { _id, year, month, date } = this.data.item;
+    const datestr = '' + year + month + date;
+    let item = DataService.findById(datestr, _id).then((item) => {
       item['addDate'] = getDateStr(new Date(item['addDate']));
       this.setData({
         item: item
       });
     });
-  },
+  },*/
   closeEditPanelEvent(e) {
     wx.navigateBack();
   },
